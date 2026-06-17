@@ -6,7 +6,13 @@
       "Bash(gh --version)",
       "Bash(git -C \"C:\\\\Users\\\\eladp\\\\Desktop\\\\אפליקציה לרוקדים\" init)",
       "Bash(git -C \"C:\\\\Users\\\\eladp\\\\Desktop\\\\אפליקציה לרוקדים\" add .)",
-      "Bash(git -C \"C:\\\\Users\\\\eladp\\\\Desktop\\\\אפליקציה לרוקדים\" commit -m \"Initial commit – מחול ישראלי עם אלעד פרל\")"
+      "Bash(git -C \"C:\\\\Users\\\\eladp\\\\Desktop\\\\אפליקציה לרוקדים\" commit -m \"Initial commit – מחול ישראלי עם אלעד פרל\")",
+      "Bash(git -C \"C:\\\\Users\\\\eladp\\\\Desktop\\\\אפליקציה לרוקדים\" config user.email \"eladperel@gmail.com\")",
+      "Bash(git -C \"C:\\\\Users\\\\eladp\\\\Desktop\\\\אפליקציה לרוקדים\" config user.name \"Elad Perl\")",
+      "Bash(git -C \"C:\\\\Users\\\\eladp\\\\Desktop\\\\אפליקציה לרוקדים\" add index.html admin.html data.js)",
+      "Bash(git -C \"C:\\\\Users\\\\eladp\\\\Desktop\\\\אפליקציה לרוקדים\" status)",
+      "Bash(git -C \"C:\\\\Users\\\\eladp\\\\Desktop\\\\אפליקציה לרוקדים\" add .claude/settings.local.json)",
+      "Bash(git -C \"C:\\\\Users\\\\eladp\\\\Desktop\\\\אפליקציה לרוקדים\" commit -m \"Update Claude Code allowed commands in settings\")"
     ]
   }
 }
