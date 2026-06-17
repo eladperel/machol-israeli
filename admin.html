@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ניהול אתר – מחול ישראלי</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #07070f; --surface: #0f0f1a; --surface2: #161625; --surface3: #1d1d30;
+      --accent: #7c5cfc; --accent2: #fc5c7d; --green: #22c55e; --red: #ef4444; --amber: #f59e0b;
+      --white: #fff; --gray: rgba(255,255,255,0.5); --gray2: rgba(255,255,255,0.25);
+      --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.14);
+      --r: 14px; --r-sm: 9px; --r-xs: 6px;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Heebo', sans-serif; background: var(--bg); color: var(--white); min-height: 100vh; }
+
+    /* ── SIDEBAR ── */
+    .layout { display: flex; min-height: 100vh; }
+
+    .sidebar {
+      width: 220px; flex-shrink: 0;
+      background: var(--surface);
+      border-left: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      position: fixed; top: 0; right: 0; bottom: 0;
+      z-index: 100;
+    }
+
+    .sidebar-logo {
+      padding: 1.5rem 1.25rem 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .sidebar-logo .brand { font-size: 0.88rem; font-weight: 900; letter-spacing: -0.02em; }
+    .sidebar-logo .brand span { color: var(--accent); }
+    .sidebar-logo .sub { font-size: 0.72rem; color: var(--gray); margin-top: 2px; }
+
+    .sidebar-nav { flex: 1; padding: 1rem 0.75rem; display: flex; flex-direction: column; gap: 0.2rem; }
+
+    .nav-item {
+      display: flex; align-items: center; gap: 0.6rem;
+      padding: 0.6rem 0.75rem;
+      border-radius: var(--r-sm);
+      font-size: 0.88rem; color: var(--gray);
+      cursor: pointer; border: none; background: none;
+      font-family: 'Heebo', sans-serif;
+      width: 100%; text-align: right;
+      transition: color 0.15s, background 0.15s;
+    }
+    .nav-item:hover { color: var(--white); background: rgba(255,255,255,0.05); }
+    .nav-item.active { color: var(--white); background: rgba(124,92,252,0.15); }
+    .nav-item.active .ni-icon { color: var(--accent); }
+
+    .ni-icon { width: 18px; height: 18px; flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    .sidebar-footer {
+      padding: 1rem 0.75rem;
+      border-top: 1px solid var(--border);
+    }
+    .view-site {
+      display: flex; align-items: center; gap: 0.5rem;
+      padding: 0.55rem 0.75rem;
+      border-radius: var(--r-sm);
+      font-size: 0.82rem; color: var(--gray);
+      text-decoration: none;
+      transition: color 0.15s, background 0.15s;
+    }
+    .view-site:hover { color: var(--white); background: rgba(255,255,255,0.05); }
+
+    /* ── MAIN ── */
+    .main { margin-right: 220px; flex: 1; padding: 2rem; min-width: 0; }
+
+    .page { display: none; }
+    .page.active { display: block; }
+
+    /* ── PAGE HEADER ── */
+    .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
+    .page-title { font-size: 1.5rem; font-weight: 900; letter-spacing: -0.03em; }
+    .page-desc { font-size: 0.85rem; color: var(--gray); margin-top: 0.2rem; }
+
+    /* ── BUTTONS ── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.55rem 1.1rem;
+      border-radius: 100px;
+      font-family: 'Heebo', sans-serif; font-size: 0.85rem; font-weight: 700;
+      cursor: pointer; border: none; transition: all 0.15s;
+    }
+    .btn-accent { background: var(--accent); color: #fff; }
+    .btn-accent:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-ghost { background: transparent; border: 1px solid var(--border2); color: var(--gray); }
+    .btn-ghost:hover { border-color: rgba(255,255,255,0.3); color: var(--white); background: rgba(255,255,255,0.04); }
+    .btn-danger { background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.3); color: #fca5a5; }
+    .btn-danger:hover { background: rgba(239,68,68,0.2); }
+    .btn-sm { padding: 0.35rem 0.75rem; font-size: 0.78rem; }
+    .btn-icon { padding: 0.4rem; border-radius: var(--r-xs); background: transparent; border: 1px solid var(--border); color: var(--gray); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: all 0.15s; }
+    .btn-icon:hover { border-color: var(--border2); color: var(--white); background: rgba(255,255,255,0.05); }
+    .btn-icon.danger:hover { border-color: rgba(239,68,68,0.4); color: #fca5a5; background: rgba(239,68,68,0.08); }
+    .btn-icon svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* ── CARDS ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; }
+    .card-title { font-size: 1rem; font-weight: 700; letter-spacing: -0.02em; }
+    .card-actions { display: flex; gap: 0.4rem; }
+
+    /* ── FORM ── */
+    .form-group { margin-bottom: 1rem; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+    .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; }
+    label { display: block; font-size: 0.78rem; color: var(--gray); margin-bottom: 0.35rem; font-weight: 500; letter-spacing: 0.02em; }
+    input, select, textarea {
+      width: 100%; padding: 0.6rem 0.85rem;
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: var(--r-sm); color: var(--white);
+      font-family: 'Heebo', sans-serif; font-size: 0.9rem;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      outline: none;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: rgba(124,92,252,0.5);
+      box-shadow: 0 0 0 3px rgba(124,92,252,0.1);
+    }
+    select option { background: #1a1a2e; }
+    textarea { resize: vertical; min-height: 70px; }
+
+    /* ── SCHEDULE PAGE ── */
+    .day-editor { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); margin-bottom: 1rem; overflow: hidden; }
+    .day-editor-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 1.25rem;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+      cursor: pointer; user-select: none;
+    }
+    .day-editor-header:hover { background: var(--surface3); }
+    .day-editor-title { font-size: 0.95rem; font-weight: 700; display: flex; align-items: center; gap: 0.6rem; }
+    .day-letter { width: 28px; height: 28px; border-radius: 50%; background: rgba(124,92,252,0.15); border: 1px solid rgba(124,92,252,0.3); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 900; color: rgba(190,175,255,0.9); flex-shrink: 0; }
+    .day-editor-body { padding: 1.25rem; display: none; }
+    .day-editor-body.open { display: block; }
+    .chevron { width: 16px; height: 16px; fill: none; stroke: var(--gray); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.2s; }
+    .chevron.open { transform: rotate(180deg); }
+
+    .classes-list { margin: 1rem 0; display: flex; flex-direction: column; gap: 0.5rem; }
+    .class-item {
+      display: grid; grid-template-columns: 1fr 90px auto;
+      gap: 0.5rem; align-items: start;
+      background: var(--surface3); border: 1px solid var(--border);
+      border-radius: var(--r-sm); padding: 0.6rem 0.8rem;
+    }
+    .class-item input { background: transparent; border: none; padding: 0.2rem 0; font-size: 0.88rem; width: 100%; }
+    .class-item input:focus { box-shadow: none; border-bottom: 1px solid rgba(124,92,252,0.4); }
+    .class-topic-input { font-size: 0.78rem !important; color: rgba(252,92,125,0.8) !important; margin-top: 0.2rem; }
+    .class-topic-input::placeholder { color: rgba(255,255,255,0.2) !important; }
+
+    /* ── VIDEO PAGE ── */
+    .videos-list { display: flex; flex-direction: column; gap: 0.6rem; }
+    .video-item {
+      display: grid; grid-template-columns: 100px 1fr 130px auto;
+      gap: 0.75rem; align-items: center;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--r-sm); padding: 0.75rem 1rem;
+      transition: border-color 0.15s;
+    }
+    .video-item:hover { border-color: var(--border2); }
+    .video-thumb { width: 100px; height: 56px; border-radius: var(--r-xs); background: var(--surface2); overflow: hidden; position: relative; flex-shrink: 0; }
+    .video-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .video-thumb .no-thumb { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
+    .video-item-title { font-size: 0.9rem; font-weight: 500; margin-bottom: 0.2rem; }
+    .video-item-id { font-size: 0.75rem; color: var(--gray); font-family: monospace; }
+    .cat-badge {
+      display: inline-block; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em;
+      padding: 0.2rem 0.6rem; border-radius: 100px;
+    }
+    .cat-beginner { background: rgba(124,92,252,0.12); border: 1px solid rgba(124,92,252,0.3); color: rgba(190,175,255,0.9); }
+    .cat-advanced { background: rgba(252,92,125,0.1); border: 1px solid rgba(252,92,125,0.3); color: rgba(255,180,195,0.9); }
+    .cat-folk     { background: rgba(245,200,66,0.1); border: 1px solid rgba(245,200,66,0.3); color: rgba(250,220,120,0.9); }
+
+    /* ── EVENT PAGE ── */
+    .events-list { display: flex; flex-direction: column; gap: 0.6rem; }
+    .event-item {
+      display: grid; grid-template-columns: 64px 1fr auto;
+      gap: 1rem; align-items: center;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--r-sm); padding: 1rem 1.1rem;
+      transition: border-color 0.15s;
+    }
+    .event-item:hover { border-color: var(--border2); }
+    .event-date-box { width: 60px; height: 64px; background: rgba(124,92,252,0.08); border: 1px solid rgba(124,92,252,0.2); border-radius: var(--r-xs); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+    .eday { font-size: 1.4rem; font-weight: 900; line-height: 1; }
+    .emonth { font-size: 0.65rem; color: var(--accent); font-weight: 700; }
+    .event-item-title { font-size: 0.92rem; font-weight: 700; margin-bottom: 0.2rem; }
+    .event-item-meta { font-size: 0.78rem; color: var(--gray); display: flex; flex-wrap: wrap; gap: 0.75rem; }
+
+    /* ── MODAL ── */
+    .modal-backdrop {
+      display: none; position: fixed; inset: 0; z-index: 999;
+      background: rgba(0,0,0,0.7); backdrop-filter: blur(6px);
+      align-items: center; justify-content: center; padding: 1rem;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal {
+      background: var(--surface); border: 1px solid var(--border2);
+      border-radius: var(--r); padding: 1.75rem;
+      width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto;
+      position: relative;
+    }
+    .modal-title { font-size: 1.1rem; font-weight: 900; letter-spacing: -0.02em; margin-bottom: 1.5rem; }
+    .modal-actions { display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+    .modal-close { position: absolute; top: 1rem; left: 1rem; background: none; border: none; color: var(--gray); cursor: pointer; padding: 0.25rem; border-radius: var(--r-xs); transition: color 0.15s; }
+    .modal-close:hover { color: var(--white); }
+    .modal-close svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+
+    /* ── TOAST ── */
+    .toast-container { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 0.5rem; align-items: center; pointer-events: none; }
+    .toast {
+      background: var(--surface2); border: 1px solid var(--border2);
+      border-radius: 100px; padding: 0.55rem 1.2rem;
+      font-size: 0.85rem; color: var(--white);
+      display: flex; align-items: center; gap: 0.5rem;
+      opacity: 0; transform: translateY(10px);
+      transition: opacity 0.25s, transform 0.25s;
+      pointer-events: none;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast.success { border-color: rgba(34,197,94,0.4); }
+    .toast.error   { border-color: rgba(239,68,68,0.4); }
+    .toast-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .toast.success .toast-dot { background: var(--green); }
+    .toast.error   .toast-dot { background: var(--red); }
+
+    /* ── EMPTY STATE ── */
+    .empty { text-align: center; padding: 3rem 1rem; color: var(--gray); }
+    .empty svg { width: 40px; height: 40px; margin-bottom: 0.75rem; opacity: 0.3; }
+    .empty p { font-size: 0.9rem; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 720px) {
+      .sidebar { width: 100%; height: auto; position: static; flex-direction: row; align-items: center; border-left: none; border-bottom: 1px solid var(--border); padding: 0.75rem 1rem; }
+      .layout { flex-direction: column; }
+      .main { margin-right: 0; padding: 1.25rem; }
+      .sidebar-logo { border-bottom: none; padding: 0; }
+      .sidebar-nav { flex-direction: row; padding: 0; gap: 0.25rem; }
+      .nav-item { padding: 0.4rem 0.65rem; }
+      .sidebar-footer { display: none; }
+      .form-row, .form-row-3 { grid-template-columns: 1fr; }
+      .video-item { grid-template-columns: 1fr auto; }
+      .video-thumb { display: none; }
+      .event-item { grid-template-columns: 1fr auto; }
+      .event-date-box { display: none; }
+      .class-item { grid-template-columns: 1fr 80px auto; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="brand">מחול <span>ישראלי</span></div>
+      <div class="sub">ממשק ניהול</div>
+    </div>
+    <nav class="sidebar-nav">
+      <button class="nav-item active" onclick="showPage('schedule', this)">
+        <svg class="ni-icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        הרקדות שבועיות
+      </button>
+      <button class="nav-item" onclick="showPage('videos', this)">
+        <svg class="ni-icon" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+        ריקודים
+      </button>
+      <button class="nav-item" onclick="showPage('events', this)">
+        <svg class="ni-icon" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        אירועים
+      </button>
+    </nav>
+    <div class="sidebar-footer">
+      <a href="index.html" target="_blank" class="view-site">
+        <svg style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        צפייה באתר
+      </a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- ═══ SCHEDULE PAGE ═══ -->
+    <div id="page-schedule" class="page active">
+      <div class="page-header">
+        <div>
+          <div class="page-title">הרקדות שבועיות</div>
+          <div class="page-desc">ערכו שעות, שמות שיעורים ומיקומים לכל יום</div>
+        </div>
+        <button class="btn btn-accent" onclick="saveSchedule()">
+          <svg style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          שמור שינויים
+        </button>
+      </div>
+      <div id="scheduleEditor"></div>
+    </div>
+
+    <!-- ═══ VIDEOS PAGE ═══ -->
+    <div id="page-videos" class="page">
+      <div class="page-header">
+        <div>
+          <div class="page-title">ריקודים</div>
+          <div class="page-desc">הוסיפו ריקודים מיוטיוב עם קישור ושם</div>
+        </div>
+        <button class="btn btn-accent" onclick="openVideoModal()">
+          <svg style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          הוסף ריקוד
+        </button>
+      </div>
+      <div class="videos-list" id="videosList"></div>
+    </div>
+
+    <!-- ═══ EVENTS PAGE ═══ -->
+    <div id="page-events" class="page">
+      <div class="page-header">
+        <div>
+          <div class="page-title">אירועים מיוחדים</div>
+          <div class="page-desc">ניהול אירועים קרובים שמופיעים באתר</div>
+        </div>
+        <button class="btn btn-accent" onclick="openEventModal()">
+          <svg style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          הוסף אירוע
+        </button>
+      </div>
+      <div class="events-list" id="eventsList"></div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ═══ VIDEO MODAL ═══ -->
+<div class="modal-backdrop" id="videoModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('videoModal')">
+      <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="modal-title" id="videoModalTitle">הוסף ריקוד</div>
+
+    <div class="form-group">
+      <label>שם הריקוד</label>
+      <input type="text" id="vTitle" placeholder="לדוגמה: הורה מדורה">
+    </div>
+    <div class="form-group">
+      <label>קישור יוטיוב <span style="color:var(--gray);font-weight:400">(URL מלא או ID בלבד)</span></label>
+      <input type="text" id="vUrl" placeholder="https://www.youtube.com/watch?v=XXXXXXXXXXX" oninput="previewYoutube()">
+    </div>
+    <div class="form-group">
+      <label>תצוגה מקדימה</label>
+      <div id="vPreview" style="width:100%;aspect-ratio:16/9;background:var(--surface2);border-radius:var(--r-sm);overflow:hidden;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--gray);font-size:0.82rem;">
+        הכנס קישור יוטיוב
+      </div>
+    </div>
+    <div class="form-group">
+      <label>רמה / קטגוריה</label>
+      <select id="vCat">
+        <option value="beginner">מתחילים</option>
+        <option value="advanced">מתקדמים</option>
+        <option value="folk">פולקלור</option>
+      </select>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('videoModal')">ביטול</button>
+      <button class="btn btn-accent" onclick="saveVideo()">שמור ריקוד</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ EVENT MODAL ═══ -->
+<div class="modal-backdrop" id="eventModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('eventModal')">
+      <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="modal-title" id="eventModalTitle">הוסף אירוע</div>
+
+    <div class="form-group">
+      <label>שם האירוע</label>
+      <input type="text" id="eTitle" placeholder="לדוגמה: ערב ריקוד – ט״ו באב">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>יום בחודש</label>
+        <input type="number" id="eDay" placeholder="28" min="1" max="31">
+      </div>
+      <div class="form-group">
+        <label>חודש</label>
+        <select id="eMonth">
+          <option>ינואר</option><option>פברואר</option><option>מרץ</option>
+          <option>אפריל</option><option>מאי</option><option>יוני</option>
+          <option>יולי</option><option>אוגוסט</option><option>ספטמבר</option>
+          <option>אוקטובר</option><option>נובמבר</option><option>דצמבר</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>שעה</label>
+        <input type="time" id="eTime">
+      </div>
+      <div class="form-group">
+        <label>סוג אירוע</label>
+        <select id="eType">
+          <option>ערב ריקוד</option>
+          <option>סדנה מיוחדת</option>
+          <option>מופע</option>
+          <option>אירוע חברתי</option>
+          <option>ימי הולדת</option>
+          <option>אחר</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>מיקום</label>
+      <input type="text" id="eLocation" placeholder="לדוגמה: מרכז תרבות רמת-גן">
+    </div>
+    <div class="form-group">
+      <label>קישור הרשמה <span style="color:var(--gray);font-weight:400">(אופציונלי)</span></label>
+      <input type="url" id="eRegister" placeholder="https://...">
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('eventModal')">ביטול</button>
+      <button class="btn btn-accent" onclick="saveEvent()">שמור אירוע</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="data.js"></script>
+<script>
+  /* ══ STATE ══ */
+  let DB = loadData();
+  let editingVideoId = null;
+  let editingEventId = null;
+
+  /* ══ NAV ══ */
+  function showPage(name, btn) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+    document.getElementById('page-' + name).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  /* ══ TOAST ══ */
+  function toast(msg, type = 'success') {
+    const c = document.getElementById('toastContainer');
+    const el = document.createElement('div');
+    el.className = 'toast ' + type;
+    el.innerHTML = `<span class="toast-dot"></span>${msg}`;
+    c.appendChild(el);
+    requestAnimationFrame(() => { requestAnimationFrame(() => el.classList.add('show')); });
+    setTimeout(() => {
+      el.classList.remove('show');
+      setTimeout(() => el.remove(), 300);
+    }, 2500);
+  }
+
+  /* ══ MODAL ══ */
+  function openModal(id) { document.getElementById(id).classList.add('open'); }
+  function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+  document.querySelectorAll('.modal-backdrop').forEach(b => {
+    b.addEventListener('click', e => { if (e.target === b) b.classList.remove('open'); });
+  });
+
+  /* ══ YOUTUBE HELPER ══ */
+  function extractYtId(url) {
+    url = url.trim();
+    const m = url.match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([A-Za-z0-9_-]{11})/);
+    return m ? m[1] : (url.length === 11 && /^[A-Za-z0-9_-]+$/.test(url) ? url : null);
+  }
+
+  function previewYoutube() {
+    const id = extractYtId(document.getElementById('vUrl').value);
+    const box = document.getElementById('vPreview');
+    if (id) {
+      box.innerHTML = `<iframe src="https://www.youtube.com/embed/${id}" style="width:100%;height:100%;border:none" allowfullscreen></iframe>`;
+    } else {
+      box.innerHTML = 'הכנס קישור יוטיוב תקין';
+      box.style.display = 'flex';
+    }
+  }
+
+  /* ══════════════════════
+     SCHEDULE
+  ══════════════════════ */
+  function renderScheduleEditor() {
+    const container = document.getElementById('scheduleEditor');
+    container.innerHTML = DB.schedule.map((day, di) => `
+      <div class="day-editor">
+        <div class="day-editor-header" onclick="toggleDay(${di})">
+          <div class="day-editor-title">
+            <div class="day-letter">${day.letter}</div>
+            ${day.dayName}
+          </div>
+          <svg class="chevron" id="chev-${di}" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="day-editor-body" id="day-body-${di}">
+          <div class="form-group">
+            <label>מיקום</label>
+            <input type="text" id="loc-${di}" value="${day.location}" placeholder="לדוגמה: אולם תרבות, רחוב הרקפת 5">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>קישור לתשלום דיגיטלי <span style="color:var(--gray);font-weight:400">(Bit / PayBox / PayPal)</span></label>
+              <input type="url" id="pay-${di}" value="${day.paymentUrl || ''}" placeholder="https://paybox.co.il/...">
+            </div>
+            <div class="form-group">
+              <label>טקסט על כפתור התשלום</label>
+              <input type="text" id="paylabel-${di}" value="${day.paymentLabel || 'תשלום לשיעור'}" placeholder="תשלום לשיעור">
+            </div>
+          </div>
+          <label>שיעורים</label>
+          <div class="classes-list" id="classes-${di}">
+            ${day.classes.map((c, ci) => classRow(di, ci, c)).join('')}
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="addClass(${di})" style="margin-top:0.5rem">
+            <svg style="width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            הוסף שיעור
+          </button>
+        </div>
+      </div>`).join('');
+  }
+
+  function classRow(di, ci, c) {
+    return `<div class="class-item" id="cr-${di}-${ci}">
+      <div>
+        <input type="text" value="${c.name}" placeholder="שם השיעור" id="cn-${di}-${ci}">
+        <input type="text" value="${c.topic || ''}" placeholder="נושא השיעור (אופציונלי)" id="ctopic-${di}-${ci}" class="class-topic-input">
+      </div>
+      <input type="time" value="${c.time}" id="ct-${di}-${ci}" style="margin-top:0.2rem">
+      <button class="btn-icon danger" onclick="removeClass(${di},${ci})" title="מחק שיעור" style="margin-top:0.2rem">
+        <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+      </button>
+    </div>`;
+  }
+
+  function toggleDay(di) {
+    const body = document.getElementById('day-body-' + di);
+    const chev = document.getElementById('chev-' + di);
+    body.classList.toggle('open');
+    chev.classList.toggle('open');
+  }
+
+  function addClass(di) {
+    DB.schedule[di].classes.push({ name: '', time: '19:00' });
+    renderScheduleEditor();
+    document.getElementById('day-body-' + di).classList.add('open');
+    document.getElementById('chev-' + di).classList.add('open');
+  }
+
+  function removeClass(di, ci) {
+    DB.schedule[di].classes.splice(ci, 1);
+    renderScheduleEditor();
+    document.getElementById('day-body-' + di).classList.add('open');
+    document.getElementById('chev-' + di).classList.add('open');
+  }
+
+  function saveSchedule() {
+    DB.schedule.forEach((day, di) => {
+      const locEl = document.getElementById('loc-' + di);
+      if (locEl) day.location = locEl.value.trim();
+      const payEl = document.getElementById('pay-' + di);
+      if (payEl) day.paymentUrl = payEl.value.trim();
+      const payLabelEl = document.getElementById('paylabel-' + di);
+      if (payLabelEl) day.paymentLabel = payLabelEl.value.trim();
+      day.classes = day.classes.map((_, ci) => ({
+        name:  (document.getElementById('cn-'    + di + '-' + ci) || {}).value || '',
+        time:  (document.getElementById('ct-'    + di + '-' + ci) || {}).value || '',
+        topic: (document.getElementById('ctopic-'+ di + '-' + ci) || {}).value.trim() || ''
+      }));
+    });
+    saveData(DB);
+    toast('מערכת השעות נשמרה בהצלחה ✓');
+  }
+
+  /* ══════════════════════
+     VIDEOS
+  ══════════════════════ */
+  const CAT_HE = { beginner: 'מתחילים', advanced: 'מתקדמים', folk: 'פולקלור' };
+
+  function renderVideos() {
+    const list = document.getElementById('videosList');
+    if (!DB.videos.length) {
+      list.innerHTML = `<div class="empty">
+        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+        <p>אין ריקודים עדיין – לחצו "הוסף ריקוד"</p>
+      </div>`;
+      return;
+    }
+    list.innerHTML = DB.videos.map(v => `
+      <div class="video-item">
+        <div class="video-thumb">
+          <img src="https://img.youtube.com/vi/${v.youtubeId}/mqdefault.jpg" alt="${v.title}" onerror="this.parentElement.innerHTML='<div class=no-thumb style=color:var(--gray);font-size:11px>אין תמונה</div>'">
+        </div>
+        <div>
+          <div class="video-item-title">${v.title}</div>
+          <div class="video-item-id">${v.youtubeId}</div>
+        </div>
+        <div><span class="cat-badge cat-${v.category}">${CAT_HE[v.category]}</span></div>
+        <div style="display:flex;gap:0.4rem">
+          <button class="btn-icon" onclick="editVideo('${v.id}')" title="עריכה">
+            <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
+          <button class="btn-icon danger" onclick="deleteVideo('${v.id}')" title="מחיקה">
+            <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          </button>
+        </div>
+      </div>`).join('');
+  }
+
+  function openVideoModal(id) {
+    editingVideoId = id || null;
+    document.getElementById('videoModalTitle').textContent = id ? 'עריכת ריקוד' : 'הוסף ריקוד';
+    if (id) {
+      const v = DB.videos.find(x => x.id === id);
+      document.getElementById('vTitle').value = v.title;
+      document.getElementById('vUrl').value = v.youtubeId;
+      document.getElementById('vCat').value = v.category;
+      document.getElementById('vPreview').innerHTML = `<iframe src="https://www.youtube.com/embed/${v.youtubeId}" style="width:100%;height:100%;border:none" allowfullscreen></iframe>`;
+    } else {
+      document.getElementById('vTitle').value = '';
+      document.getElementById('vUrl').value = '';
+      document.getElementById('vCat').value = 'beginner';
+      document.getElementById('vPreview').innerHTML = 'הכנס קישור יוטיוב';
+      document.getElementById('vPreview').style.display = 'flex';
+    }
+    openModal('videoModal');
+  }
+
+  function editVideo(id) { openVideoModal(id); }
+
+  function saveVideo() {
+    const title = document.getElementById('vTitle').value.trim();
+    const ytId  = extractYtId(document.getElementById('vUrl').value);
+    const cat   = document.getElementById('vCat').value;
+    if (!title) { toast('נא להזין שם ריקוד', 'error'); return; }
+    if (!ytId)  { toast('קישור יוטיוב לא תקין', 'error'); return; }
+
+    if (editingVideoId) {
+      const v = DB.videos.find(x => x.id === editingVideoId);
+      v.title = title; v.youtubeId = ytId; v.category = cat;
+    } else {
+      DB.videos.push({ id: 'v' + Date.now(), title, youtubeId: ytId, category: cat });
+    }
+    saveData(DB);
+    renderVideos();
+    closeModal('videoModal');
+    toast(editingVideoId ? 'הריקוד עודכן ✓' : 'הריקוד נוסף ✓');
+  }
+
+  function deleteVideo(id) {
+    if (!confirm('למחוק את הריקוד?')) return;
+    DB.videos = DB.videos.filter(v => v.id !== id);
+    saveData(DB);
+    renderVideos();
+    toast('הריקוד נמחק');
+  }
+
+  /* ══════════════════════
+     EVENTS
+  ══════════════════════ */
+  function renderEvents() {
+    const list = document.getElementById('eventsList');
+    if (!DB.events.length) {
+      list.innerHTML = `<div class="empty">
+        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <p>אין אירועים עדיין – לחצו "הוסף אירוע"</p>
+      </div>`;
+      return;
+    }
+    list.innerHTML = DB.events.map(e => `
+      <div class="event-item">
+        <div class="event-date-box">
+          <div class="eday">${e.day}</div>
+          <div class="emonth">${e.month}</div>
+        </div>
+        <div>
+          <div class="event-item-title">${e.title}</div>
+          <div class="event-item-meta">
+            <span>${e.type}</span>
+            <span>${e.time}</span>
+            ${e.location ? `<span>${e.location}</span>` : ''}
+          </div>
+        </div>
+        <div style="display:flex;gap:0.4rem">
+          <button class="btn-icon" onclick="editEvent('${e.id}')" title="עריכה">
+            <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
+          <button class="btn-icon danger" onclick="deleteEvent('${e.id}')" title="מחיקה">
+            <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          </button>
+        </div>
+      </div>`).join('');
+  }
+
+  function openEventModal(id) {
+    editingEventId = id || null;
+    document.getElementById('eventModalTitle').textContent = id ? 'עריכת אירוע' : 'הוסף אירוע';
+    if (id) {
+      const e = DB.events.find(x => x.id === id);
+      document.getElementById('eTitle').value    = e.title;
+      document.getElementById('eDay').value      = e.day;
+      document.getElementById('eMonth').value    = e.month;
+      document.getElementById('eTime').value     = e.time;
+      document.getElementById('eType').value     = e.type;
+      document.getElementById('eLocation').value = e.location;
+      document.getElementById('eRegister').value = e.registerUrl || '';
+    } else {
+      ['eTitle','eDay','eLocation','eRegister'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('eTime').value = '19:00';
+      document.getElementById('eType').value = 'ערב ריקוד';
+    }
+    openModal('eventModal');
+  }
+
+  function editEvent(id) { openEventModal(id); }
+
+  function saveEvent() {
+    const title    = document.getElementById('eTitle').value.trim();
+    const day      = document.getElementById('eDay').value.trim();
+    const month    = document.getElementById('eMonth').value;
+    const time     = document.getElementById('eTime').value;
+    const type     = document.getElementById('eType').value;
+    const location = document.getElementById('eLocation').value.trim();
+    const regUrl   = document.getElementById('eRegister').value.trim();
+
+    if (!title) { toast('נא להזין שם אירוע', 'error'); return; }
+    if (!day)   { toast('נא להזין יום', 'error'); return; }
+
+    if (editingEventId) {
+      const e = DB.events.find(x => x.id === editingEventId);
+      Object.assign(e, { title, day, month, time, type, location, registerUrl: regUrl });
+    } else {
+      DB.events.push({ id: 'e' + Date.now(), title, day, month, time, type, location, registerUrl: regUrl });
+    }
+    saveData(DB);
+    renderEvents();
+    closeModal('eventModal');
+    toast(editingEventId ? 'האירוע עודכן ✓' : 'האירוע נוסף ✓');
+  }
+
+  function deleteEvent(id) {
+    if (!confirm('למחוק את האירוע?')) return;
+    DB.events = DB.events.filter(e => e.id !== id);
+    saveData(DB);
+    renderEvents();
+    toast('האירוע נמחק');
+  }
+
+  /* ══ INIT ══ */
+  renderScheduleEditor();
+  renderVideos();
+  renderEvents();
+</script>
+</body>
+</html>
