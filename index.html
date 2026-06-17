@@ -110,6 +110,12 @@
 
     /* VIDEOS */
     #videos { background: var(--bg); }
+    .video-search-wrap { position: relative; margin-bottom: 1.2rem; }
+    .video-search { width: 100%; max-width: 360px; background: var(--surface); border: 1px solid var(--border); border-radius: 100px; padding: 0.55rem 1.1rem 0.55rem 2.6rem; color: var(--white); font-family: 'Heebo',sans-serif; font-size: 0.9rem; outline: none; transition: border-color 0.2s; }
+    .video-search::placeholder { color: var(--gray); }
+    .video-search:focus { border-color: var(--accent); }
+    .video-search-ico { position: absolute; left: 0.9rem; top: 50%; transform: translateY(-50%); width: 15px; height: 15px; color: var(--gray); pointer-events: none; }
+    body.light .video-search { background: #fff; }
     .filter-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 2.5rem; }
     .filt { background: transparent; border: 1px solid var(--border); color: var(--gray); font-family: 'Heebo',sans-serif; font-size: 0.82rem; padding: 0.35rem 1rem; border-radius: 100px; cursor: pointer; transition: all 0.15s; }
     .filt:hover { border-color: rgba(255,255,255,0.2); color: var(--white); }
@@ -326,6 +332,10 @@
     <p class="section-tag">גלריית ריקודים</p>
     <h2 class="section-h">ריקודים ללימוד</h2>
     <p class="section-sub">אוסף סרטונים שנלמדו בשיעורים – צפו, חזרו ותרגלו בבית</p>
+    <div class="video-search-wrap">
+      <input type="text" id="videoSearch" class="video-search" placeholder="חיפוש לפי שם ריקוד..." oninput="filterVidSearch()" autocomplete="off">
+      <svg class="video-search-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </div>
     <div class="filter-row" id="filterLevel">
       <button class="filt active" onclick="filterVid('level','all',this)">הכל</button>
       <button class="filt" onclick="filterVid('level','beginner',this)">מתחילים</button>
@@ -415,7 +425,7 @@
       return;
     }
     grid.innerHTML = data.videos.map(v => `
-      <div class="video-card" data-cat="${v.category}" data-form="${v.danceForm || 'all'}">
+      <div class="video-card" data-cat="${v.category}" data-form="${v.danceForm || 'all'}" data-title="${v.title.toLowerCase()}">
         <div class="video-embed" onclick="playVideo(this, '${v.youtubeId}')">
           <div class="video-thumb-wrap">
             <img src="https://img.youtube.com/vi/${v.youtubeId}/mqdefault.jpg" alt="${v.title}">
@@ -473,6 +483,16 @@
     window.open('https://www.youtube.com/watch?v=' + ytId, '_blank');
   }
 
+  function applyVideoFilters() {
+    const q = (document.getElementById('videoSearch')?.value || '').trim().toLowerCase();
+    document.querySelectorAll('.video-card').forEach(c => {
+      const levelOk  = activeLevel === 'all' || c.dataset.cat === activeLevel;
+      const formOk   = activeForm  === 'all' || c.dataset.form === activeForm;
+      const searchOk = !q || c.dataset.title.includes(q);
+      c.style.display = (levelOk && formOk && searchOk) ? '' : 'none';
+    });
+  }
+
   function filterVid(type, val, btn) {
     if (type === 'level') {
       activeLevel = val;
@@ -482,12 +502,10 @@
       document.querySelectorAll('#filterForm .filt').forEach(b => b.classList.remove('active'));
     }
     btn.classList.add('active');
-    document.querySelectorAll('.video-card').forEach(c => {
-      const levelOk = activeLevel === 'all' || c.dataset.cat === activeLevel;
-      const formOk  = activeForm  === 'all' || c.dataset.form === activeForm;
-      c.style.display = (levelOk && formOk) ? '' : 'none';
-    });
+    applyVideoFilters();
   }
+
+  function filterVidSearch() { applyVideoFilters(); }
 
   function init() {
     const data = loadData();
