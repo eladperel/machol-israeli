@@ -408,7 +408,8 @@
 
   function renderVideos(data) {
     const grid = document.getElementById('videosGrid');
-    document.getElementById('videoCount').textContent = data.videos.length;
+    const countEl = document.getElementById('videoCount');
+    if (countEl) countEl.textContent = data.videos.length;
     if (!data.videos.length) {
       grid.innerHTML = '<div class="empty-state">אין ריקודים עדיין – הוסיפו דרך ממשק הניהול</div>';
       return;
