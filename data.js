@@ -1,48 +1,5 @@
 // Default data – loaded if localStorage is empty
-const DEFAULT_DATA = {
-  schedule: [
-    {
-      id: "sun", dayName: "יום ראשון", dayShort: "ראשון", letter: "א",
-      location: "", paymentUrl: "", paymentLabel: "תשלום לשיעור",
-      classes: [
-        { name: "מחול ישראלי למתחילים", time: "19:00", topic: "" },
-        { name: "מחול ישראלי מתקדמים", time: "20:15", topic: "" },
-        { name: "ריקוד חברתי חופשי",   time: "21:30", topic: "" }
-      ]
-    },
-    {
-      id: "tue", dayName: "יום שלישי", dayShort: "שלישי", letter: "ג",
-      location: "", paymentUrl: "", paymentLabel: "תשלום לשיעור",
-      classes: [
-        { name: "ריקודי עם – כל הרמות",  time: "19:30", topic: "" },
-        { name: "מחול מזרחי ופולקלור",   time: "20:45", topic: "" },
-        { name: "חזרות קבוצה מתקדמת",   time: "22:00", topic: "" }
-      ]
-    },
-    {
-      id: "thu", dayName: "יום חמישי", dayShort: "חמישי", letter: "ה",
-      location: "", paymentUrl: "", paymentLabel: "תשלום לשיעור",
-      classes: [
-        { name: "שיעור נושא – ריקוד חדש",     time: "19:00", topic: "" },
-        { name: "חזרות על ריקודים ישנים",      time: "20:00", topic: "" },
-        { name: "ריקוד חברתי פתוח לכולם",     time: "21:00", topic: "" }
-      ]
-    }
-  ],
-  videos: [
-    { id: "v1", title: "הכנס שם ריקוד 1", youtubeId: "dQw4w9WgXcQ", category: "beginner" },
-    { id: "v2", title: "הכנס שם ריקוד 2", youtubeId: "dQw4w9WgXcQ", category: "advanced" },
-    { id: "v3", title: "הכנס שם ריקוד 3", youtubeId: "dQw4w9WgXcQ", category: "folk" },
-    { id: "v4", title: "הכנס שם ריקוד 4", youtubeId: "dQw4w9WgXcQ", category: "beginner" },
-    { id: "v5", title: "הכנס שם ריקוד 5", youtubeId: "dQw4w9WgXcQ", category: "advanced" },
-    { id: "v6", title: "הכנס שם ריקוד 6", youtubeId: "dQw4w9WgXcQ", category: "folk" }
-  ],
-  events: [
-    { id: "e1", title: "הכנס שם האירוע הראשון",  day: "28", month: "יוני",   time: "20:00", location: "", type: "ערב ריקוד",   registerUrl: "" },
-    { id: "e2", title: "הכנס שם האירוע השני",    day: "12", month: "יולי",   time: "18:30", location: "", type: "סדנה מיוחדת", registerUrl: "" },
-    { id: "e3", title: "הכנס שם האירוע השלישי",  day: "3",  month: "אוגוסט", time: "21:00", location: "", type: "מופע",        registerUrl: "" }
-  ]
-};
+const DEFAULT_DATA = {"schedule":[{"id":"sun","dayName":"יום ראשון","dayShort":"ראשון","letter":"א","location":"אולם הספורט באוניברסיטת חיפה","classes":[{"name":"סדנת זוגות למשתלבים","time":"19:00","topic":"אהבה כזו"},{"name":"סדנת מעגלים","time":"19:50","topic":""},{"name":"זוגות מתקדמים","time":"20:40","topic":""},{"name":"מעגלים מתקדמים","time":"21:20","topic":""},{"name":"זוגות עד הסוף","time":"22:00","topic":""}],"paymentUrl":"https://mrng.to/3gMHHh5yZ1","paymentLabel":"רכישת כרטיס דיגיטלי מראש"},{"id":"tue","dayName":"יום שלישי","dayShort":"שלישי","letter":"ג","location":"","classes":[{"name":"ריקודי עם – כל הרמות","time":"19:30","topic":""},{"name":"מחול מזרחי ופולקלור","time":"20:45","topic":""},{"name":"חזרות קבוצה מתקדמת","time":"22:00","topic":""}],"paymentUrl":"","paymentLabel":"תשלום לשיעור"},{"id":"thu","dayName":"יום חמישי","dayShort":"חמישי","letter":"ה","location":"","classes":[{"name":"שיעור נושא – ריקוד חדש","time":"19:00","topic":""},{"name":"חזרות על ריקודים ישנים","time":"20:00","topic":""},{"name":"ריקוד חברתי פתוח לכולם","time":"21:00","topic":""}],"paymentUrl":"","paymentLabel":"תשלום לשיעור"}],"videos":[{"id":"v1781687465379","title":"ואי ואי ואי","youtubeId":"GlywEFewGWg","category":"beginner"}],"events":[{"id":"e1","title":"הכנס שם האירוע הראשון","day":"28","month":"יוני","time":"20:00","location":"","type":"ערב ריקוד","registerUrl":""},{"id":"e2","title":"הכנס שם האירוע השני","day":"12","month":"יולי","time":"18:30","location":"","type":"סדנה מיוחדת","registerUrl":""},{"id":"e3","title":"הכנס שם האירוע השלישי","day":"3","month":"אוגוסט","time":"21:00","location":"","type":"מופע","registerUrl":""}]};
 
 function loadData() {
   try {
