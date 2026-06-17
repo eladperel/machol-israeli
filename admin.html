@@ -290,6 +290,10 @@
         <svg style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
         צפייה באתר
       </a>
+      <button class="view-site" onclick="saveToFile()" style="width:100%;border:none;cursor:pointer;background:none;font-family:Heebo,sans-serif;text-align:right;">
+        <svg style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        שמור לקובץ data.js
+      </button>
       <button class="view-site" onclick="exportData()" style="width:100%;border:none;cursor:pointer;background:none;font-family:Heebo,sans-serif;text-align:right;">
         <svg style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         ייצוא נתונים לשליחה
@@ -787,6 +791,34 @@
     saveData(DB);
     renderEvents();
     toast('האירוע נמחק');
+  }
+
+  /* ══ SAVE TO FILE ══ */
+  async function saveToFile() {
+    const raw = localStorage.getItem("danceData") || JSON.stringify(DB);
+    const content = `// Default data – loaded if localStorage is empty\nconst DEFAULT_DATA = ${raw};\n\nfunction loadData() {\n  try {\n    const raw = localStorage.getItem("danceData");\n    return raw ? JSON.parse(raw) : JSON.parse(JSON.stringify(DEFAULT_DATA));\n  } catch { return JSON.parse(JSON.stringify(DEFAULT_DATA)); }\n}\n\nfunction saveData(data) {\n  localStorage.setItem("danceData", JSON.stringify(data));\n}\n`;
+
+    if (window.showSaveFilePicker) {
+      try {
+        const fh = await window.showSaveFilePicker({
+          suggestedName: 'data.js',
+          types: [{ description: 'JavaScript', accept: { 'text/javascript': ['.js'] } }]
+        });
+        const writable = await fh.createWritable();
+        await writable.write(content);
+        await writable.close();
+        toast('data.js נשמר בהצלחה ✓ – כעת בקשו מקלוד לדחוף ל-GitHub');
+      } catch (e) {
+        if (e.name !== 'AbortError') toast('שגיאה בשמירה', 'error');
+      }
+    } else {
+      const blob = new Blob([content], { type: 'text/javascript' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'data.js';
+      a.click();
+      toast('הקובץ הורד – החליפו את data.js בתיקייה ואמרו לקלוד לדחוף ל-GitHub');
+    }
   }
 
   /* ══ EXPORT ══ */
