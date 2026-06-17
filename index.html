@@ -336,18 +336,8 @@
       <input type="text" id="videoSearch" class="video-search" placeholder="חיפוש לפי שם ריקוד..." oninput="filterVidSearch()" autocomplete="off">
       <svg class="video-search-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
     </div>
-    <div class="filter-row" id="filterLevel">
-      <button class="filt active" onclick="filterVid('level','all',this)">הכל</button>
-      <button class="filt" onclick="filterVid('level','beginner',this)">מתחילים</button>
-      <button class="filt" onclick="filterVid('level','advanced',this)">מתקדמים</button>
-      <button class="filt" onclick="filterVid('level','folk',this)">פולקלור</button>
-    </div>
-    <div class="filter-row" id="filterForm">
-      <button class="filt filt-form active" onclick="filterVid('form','all',this)">כל הצורות</button>
-      <button class="filt filt-form" onclick="filterVid('form','circle',this)">מעגלים</button>
-      <button class="filt filt-form" onclick="filterVid('form','couples',this)">זוגות</button>
-      <button class="filt filt-form" onclick="filterVid('form','lines',this)">שורות</button>
-    </div>
+    <div class="filter-row" id="filterLevel"></div>
+    <div class="filter-row" id="filterForm"></div>
     <div class="videos-grid" id="videosGrid"></div>
   </div>
 </section>
@@ -385,8 +375,7 @@
     localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
   }
 
-  const CAT_LABELS  = { beginner: 'מתחילים', advanced: 'מתקדמים', folk: 'פולקלור' };
-  const FORM_LABELS = { circle: 'מעגלים', couples: 'זוגות', lines: 'שורות' };
+  let CAT_LABELS = {}, FORM_LABELS = {};
   let activeLevel = 'all', activeForm = 'all';
 
   function renderSchedule(data) {
@@ -414,6 +403,16 @@
           ${day.paymentLabel || 'תשלום לשיעור'}
         </a>` : ''}
       </div>`).join('');
+  }
+
+  function renderFilters(data) {
+    const cats = data.categories || { levels: [], forms: [] };
+    document.getElementById('filterLevel').innerHTML =
+      `<button class="filt active" onclick="filterVid('level','all',this)">הכל</button>` +
+      cats.levels.map(c => `<button class="filt" onclick="filterVid('level','${c.id}',this)">${c.label}</button>`).join('');
+    document.getElementById('filterForm').innerHTML =
+      `<button class="filt filt-form active" onclick="filterVid('form','all',this)">כל הצורות</button>` +
+      cats.forms.map(c => `<button class="filt filt-form" onclick="filterVid('form','${c.id}',this)">${c.label}</button>`).join('');
   }
 
   function renderVideos(data) {
@@ -509,7 +508,11 @@
 
   function init() {
     const data = loadData();
+    const cats = data.categories || { levels: [], forms: [] };
+    cats.levels.forEach(c => CAT_LABELS[c.id] = c.label);
+    cats.forms.forEach(c => FORM_LABELS[c.id] = c.label);
     renderSchedule(data);
+    renderFilters(data);
     renderVideos(data);
     renderEvents(data);
   }

@@ -185,6 +185,9 @@
     .cat-advanced { background: rgba(252,92,125,0.1); border: 1px solid rgba(252,92,125,0.3); color: rgba(255,180,195,0.9); }
     .cat-folk     { background: rgba(245,200,66,0.1); border: 1px solid rgba(245,200,66,0.3); color: rgba(250,220,120,0.9); }
 
+    .inline-select { font-family: 'Heebo', sans-serif; font-size: 0.75rem; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; color: var(--white); padding: 0.2rem 0.5rem; cursor: pointer; outline: none; transition: border-color 0.15s; }
+    .inline-select:hover, .inline-select:focus { border-color: var(--accent); }
+
     /* ── EVENT PAGE ── */
     .events-list { display: flex; flex-direction: column; gap: 0.6rem; }
     .event-item {
@@ -284,6 +287,10 @@
         <svg class="ni-icon" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
         אירועים
       </button>
+      <button class="nav-item" onclick="showPage('categories', this)">
+        <svg class="ni-icon" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        קטגוריות
+      </button>
     </nav>
     <div class="sidebar-footer">
       <a href="index.html" target="_blank" class="view-site">
@@ -367,6 +374,39 @@
       <div class="events-list" id="eventsList"></div>
     </div>
 
+    <div id="page-categories" class="page">
+      <div class="page-header">
+        <div>
+          <div class="page-title">קטגוריות סינון</div>
+          <div class="page-desc">ניהול קטגוריות הסינון שמופיעות בגלריית הריקודים</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+
+        <!-- רמות -->
+        <div class="day-card" style="padding:1.2rem">
+          <div style="font-weight:700;font-size:1rem;margin-bottom:1rem;color:var(--white)">רמה / קטגוריה</div>
+          <div id="catLevelList" style="display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1rem"></div>
+          <div style="display:flex;gap:0.5rem">
+            <input type="text" id="newLevelLabel" class="form-input" placeholder="שם קטגוריה חדשה..." style="flex:1;font-size:0.85rem;padding:0.4rem 0.75rem">
+            <button class="btn btn-accent" style="padding:0.4rem 0.9rem;font-size:0.82rem" onclick="addCategory('levels')">+ הוסף</button>
+          </div>
+        </div>
+
+        <!-- צורות -->
+        <div class="day-card" style="padding:1.2rem">
+          <div style="font-weight:700;font-size:1rem;margin-bottom:1rem;color:var(--white)">צורת ריקוד</div>
+          <div id="catFormList" style="display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1rem"></div>
+          <div style="display:flex;gap:0.5rem">
+            <input type="text" id="newFormLabel" class="form-input" placeholder="שם צורת ריקוד חדשה..." style="flex:1;font-size:0.85rem;padding:0.4rem 0.75rem">
+            <button class="btn btn-accent" style="padding:0.4rem 0.9rem;font-size:0.82rem" onclick="addCategory('forms')">+ הוסף</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
   </main>
 </div>
 
@@ -395,20 +435,11 @@
     <div class="form-row">
       <div class="form-group">
         <label>רמה / קטגוריה</label>
-        <select id="vCat">
-          <option value="beginner">מתחילים</option>
-          <option value="advanced">מתקדמים</option>
-          <option value="folk">פולקלור</option>
-        </select>
+        <select id="vCat"></select>
       </div>
       <div class="form-group">
         <label>צורת ריקוד</label>
-        <select id="vForm">
-          <option value="all">לא מוגדר</option>
-          <option value="circle">מעגלים</option>
-          <option value="couples">זוגות</option>
-          <option value="lines">שורות</option>
-        </select>
+        <select id="vForm"></select>
       </div>
     </div>
 
@@ -495,6 +526,50 @@
     document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
     document.getElementById('page-' + name).classList.add('active');
     btn.classList.add('active');
+    if (name === 'categories') renderCategories();
+  }
+
+  /* ══ CATEGORIES ══ */
+  function renderCategories() {
+    const cats = DB.categories || { levels: [], forms: [] };
+    ['levels', 'forms'].forEach(type => {
+      const listId = type === 'levels' ? 'catLevelList' : 'catFormList';
+      document.getElementById(listId).innerHTML = cats[type].map((c, i) => `
+        <div style="display:flex;align-items:center;gap:0.5rem">
+          <input type="text" value="${c.label}" class="form-input" style="flex:1;font-size:0.85rem;padding:0.35rem 0.7rem"
+            onchange="renameCategory('${type}',${i},this.value)">
+          <button class="btn-icon danger" onclick="deleteCategory('${type}',${i})" title="מחיקה" style="flex-shrink:0">
+            <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+          </button>
+        </div>`).join('');
+    });
+  }
+
+  function addCategory(type) {
+    const inputId = type === 'levels' ? 'newLevelLabel' : 'newFormLabel';
+    const label = document.getElementById(inputId).value.trim();
+    if (!label) { toast('נא להזין שם', 'error'); return; }
+    if (!DB.categories) DB.categories = { levels: [], forms: [] };
+    const id = 'cat_' + Date.now();
+    DB.categories[type].push({ id, label });
+    saveData(DB);
+    document.getElementById(inputId).value = '';
+    renderCategories();
+    toast('הקטגוריה נוספה ✓');
+  }
+
+  function renameCategory(type, index, label) {
+    if (!label.trim()) return;
+    DB.categories[type][index].label = label.trim();
+    saveData(DB);
+    toast('הקטגוריה עודכנה ✓');
+  }
+
+  function deleteCategory(type, index) {
+    DB.categories[type].splice(index, 1);
+    saveData(DB);
+    renderCategories();
+    toast('הקטגוריה נמחקה');
   }
 
   /* ══ TOAST ══ */
@@ -651,6 +726,7 @@
       </div>`;
       return;
     }
+    const cats = DB.categories || { levels: [], forms: [] };
     list.innerHTML = DB.videos.map(v => `
       <div class="video-item">
         <div class="video-thumb">
@@ -660,9 +736,14 @@
           <div class="video-item-title">${v.title}</div>
           <div class="video-item-id">${v.youtubeId}</div>
         </div>
-        <div style="display:flex;flex-direction:column;gap:0.3rem;align-items:flex-start">
-          <span class="cat-badge cat-${v.category}">${CAT_HE[v.category]}</span>
-          ${v.danceForm && v.danceForm !== 'all' ? `<span class="cat-badge" style="background:rgba(252,92,125,0.1);border:1px solid rgba(252,92,125,0.3);color:rgba(255,180,195,0.9)">${FORM_HE[v.danceForm]}</span>` : ''}
+        <div style="display:flex;flex-direction:column;gap:0.4rem;align-items:flex-start">
+          <select class="inline-select" onchange="quickUpdateVideo('${v.id}','category',this.value)">
+            ${cats.levels.map(c => `<option value="${c.id}" ${v.category===c.id?'selected':''}>${c.label}</option>`).join('')}
+          </select>
+          <select class="inline-select" onchange="quickUpdateVideo('${v.id}','danceForm',this.value)">
+            <option value="all" ${(!v.danceForm||v.danceForm==='all')?'selected':''}>צורה: לא מוגדר</option>
+            ${cats.forms.map(c => `<option value="${c.id}" ${v.danceForm===c.id?'selected':''}>${c.label}</option>`).join('')}
+          </select>
         </div>
         <div style="display:flex;gap:0.4rem">
           <button class="btn-icon" onclick="editVideo('${v.id}')" title="עריכה">
@@ -678,18 +759,24 @@
   function openVideoModal(id) {
     editingVideoId = id || null;
     document.getElementById('videoModalTitle').textContent = id ? 'עריכת ריקוד' : 'הוסף ריקוד';
+    const cats = DB.categories || { levels: [], forms: [] };
+    const selCat = document.getElementById('vCat');
+    const selForm = document.getElementById('vForm');
+    selCat.innerHTML = cats.levels.map(c => `<option value="${c.id}">${c.label}</option>`).join('');
+    selForm.innerHTML = `<option value="all">לא מוגדר</option>` +
+      cats.forms.map(c => `<option value="${c.id}">${c.label}</option>`).join('');
     if (id) {
       const v = DB.videos.find(x => x.id === id);
       document.getElementById('vTitle').value = v.title;
       document.getElementById('vUrl').value = v.youtubeId;
-      document.getElementById('vCat').value = v.category;
-      document.getElementById('vForm').value = v.danceForm || 'all';
+      selCat.value = v.category;
+      selForm.value = v.danceForm || 'all';
       document.getElementById('vPreview').innerHTML = `<iframe src="https://www.youtube.com/embed/${v.youtubeId}" style="width:100%;height:100%;border:none" allowfullscreen></iframe>`;
     } else {
       document.getElementById('vTitle').value = '';
       document.getElementById('vUrl').value = '';
-      document.getElementById('vCat').value = 'beginner';
-      document.getElementById('vForm').value = 'all';
+      selCat.value = cats.levels[0]?.id || '';
+      selForm.value = 'all';
       document.getElementById('vPreview').innerHTML = 'הכנס קישור יוטיוב';
       document.getElementById('vPreview').style.display = 'flex';
     }
@@ -697,6 +784,14 @@
   }
 
   function editVideo(id) { openVideoModal(id); }
+
+  function quickUpdateVideo(id, field, value) {
+    const v = DB.videos.find(x => x.id === id);
+    if (!v) return;
+    v[field] = value;
+    saveData(DB);
+    toast('הסיווג עודכן ✓');
+  }
 
   function saveVideo() {
     const title = document.getElementById('vTitle').value.trim();
