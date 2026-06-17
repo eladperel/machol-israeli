@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
   <meta charset="UTF-8">
@@ -17,6 +17,7 @@
     }
     html { scroll-behavior: smooth; }
     body { font-family: 'Heebo', sans-serif; background: var(--bg); color: var(--white); line-height: 1.6; overflow-x: hidden; }
+    body { transition: background 0.3s, color 0.3s; }
     body::before {
       content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 9999; opacity: 0.4;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
@@ -46,7 +47,7 @@
     .mobile-menu a:hover { color: var(--white); background: rgba(255,255,255,0.05); }
 
     /* HERO */
-    .hero { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 8rem 1.5rem 4rem; position: relative; overflow: hidden; }
+    .hero { min-height: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 10rem 1.5rem 5rem; position: relative; overflow: hidden; }
     .hero::after { content: ''; position: absolute; width: 700px; height: 700px; border-radius: 50%; background: radial-gradient(circle, rgba(124,92,252,0.18) 0%, transparent 65%); top: 50%; left: 50%; transform: translate(-50%, -55%); pointer-events: none; }
     .orb { position: absolute; border-radius: 50%; pointer-events: none; filter: blur(80px); }
     .orb-1 { width: 500px; height: 500px; background: rgba(124,92,252,0.12); top: -100px; right: -150px; }
@@ -84,15 +85,16 @@
     .day-card { background: var(--surface); padding: 2rem 1.75rem; position: relative; transition: background 0.2s; }
     .day-card:hover { background: var(--surface2); }
     .day-card::before { content: attr(data-num); position: absolute; top: 1.5rem; left: 1.75rem; font-size: 4rem; font-weight: 900; color: rgba(255,255,255,0.03); line-height: 1; pointer-events: none; }
-    .day-pill { display: inline-block; background: rgba(124,92,252,0.12); border: 1px solid rgba(124,92,252,0.3); color: rgba(190,175,255,0.9); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; padding: 0.25rem 0.75rem; border-radius: 100px; margin-bottom: 0.75rem; }
-    .day-name { font-size: 1.4rem; font-weight: 900; letter-spacing: -0.03em; margin-bottom: 1.25rem; }
+    .day-pill { display: inline-block; background: rgba(124,92,252,0.12); border: 1px solid rgba(124,92,252,0.3); color: rgba(190,175,255,0.9); font-size: 0.82rem; font-weight: 700; letter-spacing: 0.08em; padding: 0.25rem 0.75rem; border-radius: 100px; margin-bottom: 0.75rem; }
+    .day-name { font-size: 1.6rem; font-weight: 900; letter-spacing: -0.03em; margin-bottom: 0.2rem; }
+    .day-subtitle { font-size: 0.95rem; color: var(--gray); font-weight: 300; margin-bottom: 1.1rem; }
     .class-row { display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0; border-bottom: 1px solid rgba(255,255,255,0.04); gap: 0.75rem; }
     .class-row:last-of-type { border-bottom: none; }
-    .class-name { font-size: 0.88rem; color: rgba(255,255,255,0.8); }
-    .class-time { font-size: 0.78rem; font-weight: 700; color: var(--accent); white-space: nowrap; font-variant-numeric: tabular-nums; }
-    .class-topic { font-size: 0.75rem; color: rgba(252,92,125,0.85); margin-top: 0.15rem; display: flex; align-items: center; gap: 0.3rem; }
+    .class-name { font-size: 1rem; color: rgba(255,255,255,0.85); }
+    .class-time { font-size: 0.92rem; font-weight: 700; color: var(--accent); white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .class-topic { font-size: 0.85rem; color: rgba(252,92,125,0.85); margin-top: 0.15rem; display: flex; align-items: center; gap: 0.3rem; }
     .class-topic::before { content: '✦'; font-size: 0.55rem; }
-    .day-location { margin-top: 1.25rem; padding-top: 0.9rem; border-top: 1px solid var(--border); font-size: 0.8rem; color: rgba(255,255,255,0.3); display: flex; align-items: center; gap: 0.4rem; }
+    .day-location { margin-top: 1.25rem; padding-top: 0.9rem; border-top: 1px solid var(--border); font-size: 0.9rem; color: rgba(255,255,255,0.3); display: flex; align-items: center; gap: 0.4rem; }
     .day-pay-btn {
       display: flex; align-items: center; justify-content: center; gap: 0.5rem;
       margin-top: 1rem; width: 100%;
@@ -161,6 +163,41 @@
 
     .ico { display: inline-block; width: 1em; height: 1em; vertical-align: -0.12em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
 
+    
+    /* ── LIGHT MODE ── */
+    body.light {
+      --bg: #f2f2fa; --surface: #ffffff; --surface2: #eceaf7;
+      --white: #0d0d1a; --gray: rgba(0,0,0,0.5);
+      --border: rgba(0,0,0,0.08); --border-accent: rgba(124,92,252,0.4);
+    }
+    body.light .nav-pill { background: rgba(255,255,255,0.88); }
+    body.light .mobile-menu { background: rgba(255,255,255,0.97); }
+    body.light .mobile-menu a:hover { background: rgba(0,0,0,0.04); }
+    body.light .nav-links a:hover { background: rgba(0,0,0,0.05); }
+    body.light .day-card::before { color: rgba(0,0,0,0.03); }
+    body.light .class-row { border-bottom-color: rgba(0,0,0,0.06); }
+    body.light .class-name { color: rgba(0,0,0,0.85); }
+    body.light .filt:hover { color: rgba(0,0,0,0.85); border-color: rgba(0,0,0,0.25); }
+    body.light .video-title { color: rgba(0,0,0,0.85); }
+    body.light .footer-copy { color: rgba(0,0,0,0.2); }
+    body.light .admin-link { color: rgba(0,0,0,0.15); }
+    body.light .hero-grid { background-image: linear-gradient(rgba(0,0,0,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.04) 1px, transparent 1px); }
+    body.light .orb-1 { background: rgba(124,92,252,0.08); }
+    body.light .orb-2 { background: rgba(252,92,125,0.06); }
+    body.light .hero::after { background: radial-gradient(circle, rgba(124,92,252,0.1) 0%, transparent 65%); }
+    body.light .hamburger { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.12); }
+    body.light .hamburger span { background: var(--white); }
+    body.light .btn-ghost { border-color: rgba(0,0,0,0.15); color: var(--white); }
+    body.light .btn-ghost:hover { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.25); }
+
+    /* theme toggle */
+    .theme-toggle { display: flex; align-items: center; justify-content: center; width: 34px; height: 34px; background: transparent; border: 1px solid var(--border); border-radius: 50%; cursor: pointer; color: var(--gray); transition: all 0.2s; flex-shrink: 0; }
+    .theme-toggle:hover { border-color: var(--accent); color: var(--accent); background: rgba(124,92,252,0.08); }
+    .theme-toggle svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .icon-sun { display: none; }
+    .icon-moon { display: block; }
+    body.light .icon-sun { display: block; }
+    body.light .icon-moon { display: none; }
     @media (max-width: 640px) {
       nav { padding: 0 1rem; }
       .nav-links { display: none; }
@@ -190,6 +227,10 @@
       <li><a href="#videos">ריקודים</a></li>
       <li><a href="#events" class="nav-cta">הצטרפו עכשיו</a></li>
     </ul>
+    <button class="theme-toggle" id="themeBtn" aria-label="החלף מצב תאורה" onclick="toggleTheme()">
+      <svg class="icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <svg class="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    </button>
     <button class="hamburger" id="hamburgerBtn" aria-label="תפריט">
       <span></span><span></span><span></span>
     </button>
@@ -208,10 +249,6 @@
   <div class="orb orb-2"></div>
   <div class="hero-grid"></div>
   <div class="hero-content">
-    <div class="hero-eyebrow">
-      <span class="eyebrow-dot"></span>
-      שיעורים פעילים · ראשון, שלישי, חמישי
-    </div>
     <h1>
       <span class="line1">מחול ישראלי</span>
       <span class="line2">עם אלעד פרל</span>
@@ -223,11 +260,6 @@
         <svg class="ico" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
       </a>
       <a href="#videos" class="btn-ghost">צפייה בריקודים</a>
-    </div>
-    <div class="hero-stats">
-      <div class="stat"><div class="stat-num">3</div><div class="stat-label">ימי שיעור בשבוע</div></div>
-      <div class="stat"><div class="stat-num" id="videoCount">0</div><div class="stat-label">ריקודים בגלריה</div></div>
-      <div class="stat"><div class="stat-num">כל</div><div class="stat-label">רמות מתקבלות</div></div>
     </div>
   </div>
 </section>
@@ -258,11 +290,17 @@
     <p class="section-tag">גלריית ריקודים</p>
     <h2 class="section-h">ריקודים ללימוד</h2>
     <p class="section-sub">אוסף סרטונים שנלמדו בשיעורים – צפו, חזרו ותרגלו בבית</p>
-    <div class="filter-row">
-      <button class="filt active" onclick="filterVid('all',this)">הכל</button>
-      <button class="filt" onclick="filterVid('beginner',this)">מתחילים</button>
-      <button class="filt" onclick="filterVid('advanced',this)">מתקדמים</button>
-      <button class="filt" onclick="filterVid('folk',this)">פולקלור</button>
+    <div class="filter-row" id="filterLevel">
+      <button class="filt active" onclick="filterVid('level','all',this)">הכל</button>
+      <button class="filt" onclick="filterVid('level','beginner',this)">מתחילים</button>
+      <button class="filt" onclick="filterVid('level','advanced',this)">מתקדמים</button>
+      <button class="filt" onclick="filterVid('level','folk',this)">פולקלור</button>
+    </div>
+    <div class="filter-row" id="filterForm">
+      <button class="filt filt-form active" onclick="filterVid('form','all',this)">כל הצורות</button>
+      <button class="filt filt-form" onclick="filterVid('form','circle',this)">מעגלים</button>
+      <button class="filt filt-form" onclick="filterVid('form','couples',this)">זוגות</button>
+      <button class="filt filt-form" onclick="filterVid('form','lines',this)">שורות</button>
     </div>
     <div class="videos-grid" id="videosGrid"></div>
   </div>
@@ -293,7 +331,17 @@
 
 <script src="data.js"></script>
 <script>
-  const CAT_LABELS = { beginner: 'מתחילים', advanced: 'מתקדמים', folk: 'פולקלור' };
+  // theme init (before render to avoid flash)
+  if (localStorage.getItem('theme') === 'light') document.body.classList.add('light');
+
+  function toggleTheme() {
+    document.body.classList.toggle('light');
+    localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
+  }
+
+  const CAT_LABELS  = { beginner: 'מתחילים', advanced: 'מתקדמים', folk: 'פולקלור' };
+  const FORM_LABELS = { circle: 'מעגלים', couples: 'זוגות', lines: 'שורות' };
+  let activeLevel = 'all', activeForm = 'all';
 
   function renderSchedule(data) {
     const grid = document.getElementById('scheduleGrid');
@@ -301,6 +349,7 @@
       <div class="day-card" data-num="${day.letter}">
         <div class="day-pill">${day.dayShort}</div>
         <div class="day-name">${day.dayName}</div>
+        ${day.subtitle ? `<div class="day-subtitle">${day.subtitle}</div>` : ''}
         ${day.classes.map((c,i) => `
           <div class="class-row${i === day.classes.length-1 ? ' last' : ''}">
             <div>
@@ -329,7 +378,7 @@
       return;
     }
     grid.innerHTML = data.videos.map(v => `
-      <div class="video-card" data-cat="${v.category}">
+      <div class="video-card" data-cat="${v.category}" data-form="${v.danceForm || 'all'}">
         <div class="video-embed" onclick="playVideo(this, '${v.youtubeId}')">
           <div class="video-thumb-wrap">
             <img src="https://img.youtube.com/vi/${v.youtubeId}/mqdefault.jpg" alt="${v.title}">
@@ -342,7 +391,10 @@
           </div>
         </div>
         <div class="video-body">
-          <div class="video-cat">${CAT_LABELS[v.category] || v.category}</div>
+          <div style="display:flex;gap:0.4rem;align-items:center;flex-wrap:wrap;margin-bottom:0.3rem">
+            <div class="video-cat">${CAT_LABELS[v.category] || v.category}</div>
+            ${v.danceForm && v.danceForm !== 'all' ? `<div class="video-cat" style="color:var(--accent2)">${FORM_LABELS[v.danceForm]}</div>` : ''}
+          </div>
           <div class="video-title">${v.title}</div>
         </div>
       </div>`).join('');
@@ -384,11 +436,19 @@
     window.open('https://www.youtube.com/watch?v=' + ytId, '_blank');
   }
 
-  function filterVid(cat, btn) {
-    document.querySelectorAll('.filt').forEach(b => b.classList.remove('active'));
+  function filterVid(type, val, btn) {
+    if (type === 'level') {
+      activeLevel = val;
+      document.querySelectorAll('#filterLevel .filt').forEach(b => b.classList.remove('active'));
+    } else {
+      activeForm = val;
+      document.querySelectorAll('#filterForm .filt').forEach(b => b.classList.remove('active'));
+    }
     btn.classList.add('active');
     document.querySelectorAll('.video-card').forEach(c => {
-      c.style.display = (cat === 'all' || c.dataset.cat === cat) ? '' : 'none';
+      const levelOk = activeLevel === 'all' || c.dataset.cat === activeLevel;
+      const formOk  = activeForm  === 'all' || c.dataset.form === activeForm;
+      c.style.display = (levelOk && formOk) ? '' : 'none';
     });
   }
 
