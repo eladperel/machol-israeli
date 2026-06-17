@@ -392,13 +392,24 @@
         הכנס קישור יוטיוב
       </div>
     </div>
-    <div class="form-group">
-      <label>רמה / קטגוריה</label>
-      <select id="vCat">
-        <option value="beginner">מתחילים</option>
-        <option value="advanced">מתקדמים</option>
-        <option value="folk">פולקלור</option>
-      </select>
+    <div class="form-row">
+      <div class="form-group">
+        <label>רמה / קטגוריה</label>
+        <select id="vCat">
+          <option value="beginner">מתחילים</option>
+          <option value="advanced">מתקדמים</option>
+          <option value="folk">פולקלור</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>צורת ריקוד</label>
+        <select id="vForm">
+          <option value="all">לא מוגדר</option>
+          <option value="circle">מעגלים</option>
+          <option value="couples">זוגות</option>
+          <option value="lines">שורות</option>
+        </select>
+      </div>
     </div>
 
     <div class="modal-actions">
@@ -542,6 +553,10 @@
         </div>
         <div class="day-editor-body" id="day-body-${di}">
           <div class="form-group">
+            <label>כותרת היום <span style="color:var(--gray);font-weight:400">(מופיעה מתחת לשם היום)</span></label>
+            <input type="text" id="sub-${di}" value="${day.subtitle || ''}" placeholder="לדוגמה: זוגות ומעגלים באוניברסיטת חיפה">
+          </div>
+          <div class="form-group">
             <label>מיקום</label>
             <input type="text" id="loc-${di}" value="${day.location}" placeholder="לדוגמה: אולם תרבות, רחוב הרקפת 5">
           </div>
@@ -603,6 +618,8 @@
 
   function saveSchedule() {
     DB.schedule.forEach((day, di) => {
+      const subEl = document.getElementById('sub-' + di);
+      if (subEl) day.subtitle = subEl.value.trim();
       const locEl = document.getElementById('loc-' + di);
       if (locEl) day.location = locEl.value.trim();
       const payEl = document.getElementById('pay-' + di);
@@ -622,7 +639,8 @@
   /* ══════════════════════
      VIDEOS
   ══════════════════════ */
-  const CAT_HE = { beginner: 'מתחילים', advanced: 'מתקדמים', folk: 'פולקלור' };
+  const CAT_HE  = { beginner: 'מתחילים', advanced: 'מתקדמים', folk: 'פולקלור' };
+  const FORM_HE = { circle: 'מעגלים', couples: 'זוגות', lines: 'שורות' };
 
   function renderVideos() {
     const list = document.getElementById('videosList');
@@ -642,7 +660,10 @@
           <div class="video-item-title">${v.title}</div>
           <div class="video-item-id">${v.youtubeId}</div>
         </div>
-        <div><span class="cat-badge cat-${v.category}">${CAT_HE[v.category]}</span></div>
+        <div style="display:flex;flex-direction:column;gap:0.3rem;align-items:flex-start">
+          <span class="cat-badge cat-${v.category}">${CAT_HE[v.category]}</span>
+          ${v.danceForm && v.danceForm !== 'all' ? `<span class="cat-badge" style="background:rgba(252,92,125,0.1);border:1px solid rgba(252,92,125,0.3);color:rgba(255,180,195,0.9)">${FORM_HE[v.danceForm]}</span>` : ''}
+        </div>
         <div style="display:flex;gap:0.4rem">
           <button class="btn-icon" onclick="editVideo('${v.id}')" title="עריכה">
             <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -662,11 +683,13 @@
       document.getElementById('vTitle').value = v.title;
       document.getElementById('vUrl').value = v.youtubeId;
       document.getElementById('vCat').value = v.category;
+      document.getElementById('vForm').value = v.danceForm || 'all';
       document.getElementById('vPreview').innerHTML = `<iframe src="https://www.youtube.com/embed/${v.youtubeId}" style="width:100%;height:100%;border:none" allowfullscreen></iframe>`;
     } else {
       document.getElementById('vTitle').value = '';
       document.getElementById('vUrl').value = '';
       document.getElementById('vCat').value = 'beginner';
+      document.getElementById('vForm').value = 'all';
       document.getElementById('vPreview').innerHTML = 'הכנס קישור יוטיוב';
       document.getElementById('vPreview').style.display = 'flex';
     }
@@ -678,15 +701,16 @@
   function saveVideo() {
     const title = document.getElementById('vTitle').value.trim();
     const ytId  = extractYtId(document.getElementById('vUrl').value);
-    const cat   = document.getElementById('vCat').value;
+    const cat      = document.getElementById('vCat').value;
+    const danceForm = document.getElementById('vForm').value;
     if (!title) { toast('נא להזין שם ריקוד', 'error'); return; }
     if (!ytId)  { toast('קישור יוטיוב לא תקין', 'error'); return; }
 
     if (editingVideoId) {
       const v = DB.videos.find(x => x.id === editingVideoId);
-      v.title = title; v.youtubeId = ytId; v.category = cat;
+      v.title = title; v.youtubeId = ytId; v.category = cat; v.danceForm = danceForm;
     } else {
-      DB.videos.push({ id: 'v' + Date.now(), title, youtubeId: ytId, category: cat });
+      DB.videos.push({ id: 'v' + Date.now(), title, youtubeId: ytId, category: cat, danceForm });
     }
     saveData(DB);
     renderVideos();
